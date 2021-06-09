@@ -1,9 +1,25 @@
-public class REcompile {
+import java.io.Console;
+import java.util.*;
+import java.io.*;
 
-    static String p = "ab*a+cd";
+public class REcompile {
+    static String regex = "";
     static int j = 0;
     public static void main(String[] args) {
-
+        String usgMsg = new String("Usage: java REcompile \"regex\"");
+        if(args.length > 1) {
+            System.out.println(usgMsg);
+            return;
+        }
+        try {
+            regex = args[0];
+            System.out.println(regex);
+        } catch (Exception e) {
+            System.err.println(e);
+            System.err.println(usgMsg);
+            e.printStackTrace();
+            return;
+        }
     }
 
     public static void expression() {
@@ -15,7 +31,7 @@ public class REcompile {
     }
 
     public static void factor(){
-        if(isVocab(p.charAt(j))) {
+        if(isVocab(regex.charAt(j))) {
             j++; // consuming literals
             
         }
