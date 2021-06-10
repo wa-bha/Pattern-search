@@ -23,7 +23,9 @@ public class REcompile {
             nxt1 = new int[regex.length()*2];
             nxt2 = new int[regex.length()*2];
             startState = 1;
-            expression();
+            //int initial = expression();
+            System.out.println("s |" + " ch |" + " 1 |" + " 2 ");
+            System.out.println("--------------");
             System.out.println(regex);
         } catch (Exception e) {
             System.err.println(e);
@@ -36,32 +38,48 @@ public class REcompile {
     public static int expression() {
         int r;
         r = term();
-
+        // check if we finished
+        // perform look ahead
         return r;
     }
 
     public static int term() {
-        int r;
+        int r, t1, t2, f;
         r = factor();
+        t1 = r;
+        f = state - 1;
         return r;
     }
 
     public static int factor(){
         char c = regex.charAt(index);
-        int r;
+        int r; // the result of the state that was just built
         state = startState;
         //If the factor is a literal
         if(isVocab(regex.charAt(index))) {
             setState(state, regex.charAt(index), state+1, state+1);
+
             index++; 
             r = state;
             state++;
             startState++;
         }
         else {
-            
+            if(regex.charAt(index) == '(') {
+                index++;
+                r = expression();
+
+                if(regex.charAt(index) == ')') {
+                    index++;
+                } else {
+                    return -1;
+                }
+            } else {
+                return -1;
+            }
         }
 
+        // returns the state that was built
         return r;
     }
 
