@@ -3,29 +3,44 @@ import java.util.*;
 
 public class REsearch {
 
+    //Storing FSM
     static ArrayList<String> char_ = new ArrayList<String>();  
     static ArrayList<Integer> next1 = new ArrayList<Integer>();
     static ArrayList<Integer> next2 = new ArrayList<Integer>();
 
     public static void main(String[] args) {
 
-        // Get the file into the buffered reader
-        if (args[0] != null) {
-            String filename = args[0];
-            readFile(filename);
-        }
-
-        // Get the Finite State Machine (FSM)
+        String nextLine;
         getFSM();
 
+        // Get the file into the buffered reader and read next line
+        if (args[0] != null) {
+            String filename = args[0];
+            try (BufferedReader fileReader = new BufferedReader(new FileReader(filename))){
+                nextLine = fileReader.readLine();
+                
+                //While there are still lines in the file
+
+                while (nextLine != null) {
+                    //If a matching pattern is found in the line ........
+                    if (executePatternSearch(nextLine)) {
+                        System.out.println("Match found!!!");
+                    }
+
+                    nextLine = fileReader.readLine();
+                }
+
+            } catch (Exception e) {
+                System.err.println("Invalid file");
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static void readFile(String filename) {
-        try (BufferedReader fileReader = new BufferedReader(new FileReader(filename))){
-        } catch (Exception e) {
-            System.err.println("Invalid file");
-            e.printStackTrace();
-        }
+    // Recieves a string containing line from text file
+    // Checks a substring can go through FSM and reach the final state -> contains pattern)
+    public static boolean executePatternSearch(String line) {
+        return true;
     }
 
     //Read standard input to populate the FSM arrays
