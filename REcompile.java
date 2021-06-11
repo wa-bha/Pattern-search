@@ -73,19 +73,45 @@ public class REcompile {
                 }
             }
             else if(regex.charAt(index)=='+'){
-                if(nxt1[f]==nxt2[f]) {
-                    nxt2[f]=state;
-                }
-                nxt1[f]=state;
-                f=state-1;
-                index++;r=state;state++; 
-                t2=term();
-                setState(r,"br",t1,t2);
-                if(nxt1[f]==nxt2[f]) {
-                    nxt2[f]=state;
-                }
-                nxt1[f]=state;
+                // create the branching state
+                setState(state,"br",t1,state+1);
+                index++; r=state; state++;
             }
+            else if(regex.charAt(index)=='?'){
+                // store 
+                int tempS = state - 2;
+                String tempS_val = new String(ch[tempS] + " ");
+
+                // create the branching state
+                setState(state,"br",t1,state+1);
+
+                // change previous state values
+                if(ch[tempS] == "br") {
+                    setState(tempS, ch[tempS], nxt1[tempS], state); // change the previous 2 state
+                    setState(state-1, ch[state-1], state+1, state+1); // change the previous state
+                    index++; r=state; state++;
+                } 
+                else if (isVocab(tempS_val.charAt(0))){
+                    setState(tempS, ch[tempS], state, state);
+                    setState(state-1, ch[state-1], state+1, state+1); // change the previous state
+                    index++; r=state; state++;
+                }
+            }
+            // Tony's alternation? '|'
+            // else if(regex.charAt(index)=='+'){
+            //     if(nxt1[f]==nxt2[f]) {
+            //         nxt2[f]=state;
+            //     }
+            //     nxt1[f]=state;
+            //     f=state-1;
+            //     index++;r=state;state++; 
+            //     t2=term();
+            //     setState(r,"br",t1,t2);
+            //     if(nxt1[f]==nxt2[f]) {
+            //         nxt2[f]=state;
+            //     }
+            //     nxt1[f]=state;
+            // }
         }
         return r;
     }
