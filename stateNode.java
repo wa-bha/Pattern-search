@@ -1,3 +1,7 @@
+//
+// Names:   Eugene Chew   ,   Bhavit Wadhwa
+// IDs:     1351553       ,   1516846
+//
 public class stateNode {
     public String ch;
     public Integer next1;

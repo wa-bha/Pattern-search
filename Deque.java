@@ -1,3 +1,8 @@
+
+//
+// Names:   Eugene Chew   ,   Bhavit Wadhwa
+// IDs:     1351553       ,   1516846
+//
 import java.util.*;
 
 // Double-ended queue implementation using LinkedList
@@ -58,4 +63,3 @@ public class Deque {
         }
     }
 }
-
