@@ -41,7 +41,11 @@ public class REcompile {
         int r;
         r = term();
         if (index < regex.length()) {
+            if(regex.charAt(index) == '(') {
+                r = expression();
+            }
             expression();
+
         }
         // check if we finished
         // perform look ahead
@@ -69,7 +73,7 @@ public class REcompile {
                     index++;
                     r = state;
                     state++;
-                } else if (isVocab(tempS_val.charAt(0))) {
+                } else if (isVocab(tempS_val.charAt(0)) || isSpecial(tempS_val.charAt(0))) {
                     setState(tempS, ch[tempS], state, state);
                     index++;
                     r = state;
@@ -96,7 +100,7 @@ public class REcompile {
                     index++;
                     r = state;
                     state++;
-                } else if (isVocab(tempS_val.charAt(0))) {
+                } else if (isVocab(tempS_val.charAt(0)) || isSpecial(tempS_val.charAt(0))) {
                     setState(tempS, ch[tempS], state, state);
                     setState(state - 1, ch[state - 1], state + 1, state + 1); // change the previous state
                     index++;
@@ -105,7 +109,7 @@ public class REcompile {
                 }
             }
             // Tony's alternation? '|'
-            // else if(regex.charAt(index)=='+'){
+            // else if(regex.charAt(index)=='|'){
             // if(nxt1[f]==nxt2[f]) {
             // nxt2[f]=state;
             // }
@@ -124,12 +128,14 @@ public class REcompile {
     }
 
     public static int factor() {
+        //String c = String.valueOf(regex.charAt(index));
         int r; // the result of the state that was just built
         // If the factor is a literal
         // if(index < regex.length()) {
 
         // }
-        if (isVocab(regex.charAt(index)) && regex.charAt(index) != '.') {
+        //System.out.println(c);
+        if (isVocab(regex.charAt(index)) && regex.charAt(index) != '.' && (int)regex.charAt(index) != 92) {
             setState(state, regex.charAt(index) + "", state + 1, state + 1);
             index++;
             r = state;
@@ -139,6 +145,19 @@ public class REcompile {
             index++;
             r = state;
             state++;
+        } else if((int)regex.charAt(index) == 92) {
+            String escapedChar = "";
+            // skip over the \ character
+            index++;
+            escapedChar = String.valueOf(regex.charAt(index));
+            System.out.println(escapedChar);
+            // add the escaped character
+            setState(state, escapedChar , state+1, state+1);
+            index++;
+            r = state;
+            state++;
+
+            // add the escaped char
         } else {
             if (regex.charAt(index) == '(') {
                 index++;
@@ -149,11 +168,31 @@ public class REcompile {
                 } else {
                     return -1;
                 }
-            } else {
+            }
+            else if(regex.charAt(index) == '[') {
+                index++;
+                r = addList();
+            }
+            else {
+                System.out.println("Invalid Expression!");
                 return -1;
             }
         }
         // returns the state that was built
+        return r;
+    }
+
+    public static int addList() {
+        int r;
+        String s = "";
+        while(regex.charAt(index) != ']') {
+            s =  s.concat(regex.charAt(index)+"");
+            index++;
+        }
+        setState(state, s, state+1, state+1);
+        index++;
+        r = state;
+        state++;
         return r;
     }
 
@@ -165,7 +204,14 @@ public class REcompile {
             return false;
         }
     }
-
+    public static boolean isSpecial(char c) {
+        String specialChar = "*+?|()[]";
+        if (specialChar.contains(c + "")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public static void setState(int s, String c, int n1, int n2) {
         ch[s] = c;
         nxt1[s] = n1;
