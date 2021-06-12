@@ -13,7 +13,7 @@ public class REsearch {
 
     public static void main(String[] args) {
         //Check correct usage and standard input
-        if (args.length == 0) {
+        if (args.length != 0) {
             System.err.println("Please enter a valid input text file");
             System.err.println("Usage testing example: cat brownTestFSM.txt | java Dequeue brownTestInput.txt > out.txt\n");
             System.exit(0);
@@ -25,12 +25,12 @@ public class REsearch {
 
         // Get the file into the buffered reader and read next line
         String nextLine;
-        String filename = args[0];
+        //String filename = args[0];
 
         //DEBUG FILEREADER
-        //try (BufferedReader fileReader = new BufferedReader(new FileReader("brownTestInput.txt"))){
+        try (BufferedReader fileReader = new BufferedReader(new FileReader("brownTestInput.txt"))){
 
-        try (BufferedReader fileReader = new BufferedReader(new FileReader(filename))){
+        //try (BufferedReader fileReader = new BufferedReader(new FileReader(filename))){
             nextLine = fileReader.readLine();
             
             while (nextLine != null) {
@@ -64,36 +64,40 @@ public class REsearch {
                 deque = new Deque();
                 deque.addHead(SCAN_STATE);
                 deque.addHead(0);
+
+                stateNode currentNode;
+                Integer removedHead;
                 
                 // Get the next head()
                 int currentStateValue = deque.getHead();
 
-                System.err.println(currentStateValue);
-
                 // While the head is not the "SCAN" state
                 while (currentStateValue != SCAN_STATE) {
-                    stateNode currentNode = allStates.get(currentStateValue);
+                    currentNode = allStates.get(currentStateValue);
 
                     //If it is a BRANCH state
-                    if (currentNode.ch == "br") {
+                    if (currentNode.ch.equals("br")) {
 
-                        //If it is the start state
-                        if (currentNode.next1 == currentNode.next2) {
+                        //If it is the non-start state
+                        if (currentNode.stateNum != 0) {
                             deque.addTail(currentNode.next1);
-                            deque.getHead();
+                            deque.addTail(currentNode.next2);
 
                         }
-                        //Else, add both .next values to deque
-                        deque.addTail(currentNode.next1);
-                        deque.addTail(currentNode.next2);
-                        deque.getHead();
+                        else {
+                            deque.addTail(currentNode.next1);
+                            removedHead = deque.getHead();
+                            System.out.println(removedHead);
+                            deque.addTail(SCAN_STATE);
+                            currentNode = allStates.get(currentNode.next1);
+                        }
                     }
 
                     //Otherwise it is a CHARACTER state - check CHAR == INPUT
-                    if (currentNode.ch == splitLine[pointer]) {
+                    else if (currentNode.ch.equals(splitLine[pointer])) {
 
                         //If the next state is the end of the FSM (char == null)
-                        if (allStates.get(currentNode.next1).ch == null) {
+                        if (allStates.get(currentNode.next1).ch.equals(null)) {
                             foundMatch = true;
                         }
                         pointer++;
@@ -139,15 +143,17 @@ public class REsearch {
         String[] split;
 
         //DEBUG FILEREADER
-        //try (BufferedReader fileReader = new BufferedReader(new FileReader("brownTestInput.txt"))){
+        try (BufferedReader reader = new BufferedReader(new FileReader("brownTestFSM.txt"))){
 
-
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
+        //try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))){
             line = reader.readLine();
+            int counter = 0;
+
             while (line != null) {
                 split = line.split(",");
-                allStates.add(new stateNode(split[0].toString(), Integer.parseInt(split[1]), Integer.parseInt(split[2])));
+                allStates.add(new stateNode(split[0].toString(), Integer.parseInt(split[1]), Integer.parseInt(split[2]), counter));
                 line = reader.readLine();
+                counter++;
             }
         } catch(Exception e) {
             System.err.println("Invalid piped in FSM");
