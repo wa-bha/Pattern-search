@@ -1,3 +1,8 @@
+//
+// Names:   Eugene Chew   ,   Bhavit Wadhwa
+// IDs:     1351553       ,   1516846
+//
+
 import java.io.Console;
 import java.lang.*;
 import java.util.*;
@@ -26,9 +31,14 @@ public class REcompile {
             nxt1 = new int[regex.length() + 2];
             nxt2 = new int[regex.length() + 2];
             initial = expression();
-            setState(startState, "br", initial, initial); // initialise a blank state
-            printFSM();
-            System.out.println("Regular Expression: " + regex);
+            if(initial == -1) {
+                System.out.println("The Regular Expression: " + regex + " is not valid");
+                return;
+            } else {
+                setState(startState, "br", initial, initial); // initialise a blank state
+                printFSM();
+                System.out.println("Regular Expression: " + regex);
+            }
         } catch (Exception e) {
             System.err.println(e);
             System.err.println(usgMsg);
@@ -40,12 +50,10 @@ public class REcompile {
     public static int expression() {
         int r;
         r = term();
-        if (index < regex.length()) {
-            if(regex.charAt(index) == '(') {
-                r = expression();
-            }
+        if (index < regex.length() && r != -1) {
             expression();
-
+        } else {
+            return -1;
         }
         // check if we finished
         // perform look ahead
@@ -57,7 +65,7 @@ public class REcompile {
         r = factor();
         t1 = r; // make note of the created state
         f = state - 1; // the last state that was built
-        if (index < regex.length()) {
+        if (index < regex.length() && r != -1) {
             // check Kleene closure
             if (regex.charAt(index) == '*') {
                 // store
@@ -108,6 +116,31 @@ public class REcompile {
                     state++;
                 }
             }
+            else if(regex.charAt(index) == '|') {
+                int preState;
+
+                preState = state-2;
+                if(nxt1[f] == nxt2[f]) {
+                    nxt2[f] = state;
+                }
+                nxt1[f] = state;
+                f = state-1;
+                index++;
+                r = state;
+                state++;
+                t2 = term();
+                setState(r, "br", t1, state-1);
+                if(nxt1[f] == nxt2[f]) {
+                    nxt2[f] = state;
+                }
+                nxt1[f]=state;
+                if(ch[preState] != "br"){
+                    setState(preState, ch[preState], r, r);
+                } 
+                else if(ch[preState] == "br") {
+                    setState(preState, ch[preState], nxt1[preState], r);
+                }
+            }
             // Tony's alternation? '|'
             // else if(regex.charAt(index)=='|'){
             // if(nxt1[f]==nxt2[f]) {
@@ -124,17 +157,14 @@ public class REcompile {
             // nxt1[f]=state;
             // }
         }
+        else {
+            return -1;
+        }
         return r;
     }
 
     public static int factor() {
-        //String c = String.valueOf(regex.charAt(index));
         int r; // the result of the state that was just built
-        // If the factor is a literal
-        // if(index < regex.length()) {
-
-        // }
-        //System.out.println(c);
         if (isVocab(regex.charAt(index)) && regex.charAt(index) != '.' && (int)regex.charAt(index) != 92) {
             setState(state, regex.charAt(index) + "", state + 1, state + 1);
             index++;
