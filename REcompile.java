@@ -31,7 +31,7 @@ public class REcompile {
             nxt1 = new int[regex.length() + 2];
             nxt2 = new int[regex.length() + 2];
             initial = expression();
-            if(initial == -1) {
+            if (initial == -1) {
                 System.out.println("The Regular Expression: " + regex + " is not valid");
                 return;
             } else {
@@ -50,13 +50,12 @@ public class REcompile {
     public static int expression() {
         int r;
         r = term();
+        // check if we still have expressions
         if (index < regex.length() && r != -1) {
             expression();
         } else {
             return -1;
         }
-        // check if we finished
-        // perform look ahead
         return r;
     }
 
@@ -65,6 +64,8 @@ public class REcompile {
         r = factor();
         t1 = r; // make note of the created state
         f = state - 1; // the last state that was built
+
+        // check if the current index is within the bounds of the regex length
         if (index < regex.length() && r != -1) {
             // check Kleene closure
             if (regex.charAt(index) == '*') {
@@ -81,19 +82,19 @@ public class REcompile {
                     index++;
                     r = state;
                     state++;
-                } else if (isVocab(tempS_val.charAt(0)) || isSpecial(tempS_val.charAt(0))) {
+                } else if (isVocab(tempS_val.charAt(0)) || isSpecial(tempS_val.charAt(0))) { // check literals
                     setState(tempS, ch[tempS], state, state);
                     index++;
                     r = state;
                     state++;
                 }
-            } else if (regex.charAt(index) == '+') {
+            } else if (regex.charAt(index) == '+') { // check preceding regexp 1 or more
                 // create the branching state
                 setState(state, "br", t1, state + 1);
                 index++;
                 r = state;
                 state++;
-            } else if (regex.charAt(index) == '?') {
+            } else if (regex.charAt(index) == '?') { // check preceding regexp 0 or 1
                 // store
                 int tempS = state - 2;
                 String tempS_val = new String(ch[tempS] + " ");
@@ -115,49 +116,32 @@ public class REcompile {
                     r = state;
                     state++;
                 }
-            }
-            else if(regex.charAt(index) == '|') {
+            } else if (regex.charAt(index) == '|') { // check for alternation
                 int preState;
 
-                preState = state-2;
-                if(nxt1[f] == nxt2[f]) {
+                preState = state - 2;
+                if (nxt1[f] == nxt2[f]) {
                     nxt2[f] = state;
                 }
                 nxt1[f] = state;
-                f = state-1;
+                f = state - 1;
                 index++;
                 r = state;
                 state++;
                 t2 = term();
-                setState(r, "br", t1, state-1);
-                if(nxt1[f] == nxt2[f]) {
+                setState(r, "br", t1, state - 1);
+                if (nxt1[f] == nxt2[f]) {
                     nxt2[f] = state;
                 }
-                nxt1[f]=state;
-                if(ch[preState] != "br"){
+                nxt1[f] = state;
+                // change the previous linked states next states
+                if (ch[preState] != "br") {
                     setState(preState, ch[preState], r, r);
-                } 
-                else if(ch[preState] == "br") {
+                } else if (ch[preState] == "br") {
                     setState(preState, ch[preState], nxt1[preState], r);
                 }
             }
-            // Tony's alternation? '|'
-            // else if(regex.charAt(index)=='|'){
-            // if(nxt1[f]==nxt2[f]) {
-            // nxt2[f]=state;
-            // }
-            // nxt1[f]=state;
-            // f=state-1;
-            // index++;r=state;state++;
-            // t2=term();
-            // setState(r,"br",t1,t2);
-            // if(nxt1[f]==nxt2[f]) {
-            // nxt2[f]=state;
-            // }
-            // nxt1[f]=state;
-            // }
-        }
-        else {
+        } else {
             return -1;
         }
         return r;
@@ -165,7 +149,7 @@ public class REcompile {
 
     public static int factor() {
         int r; // the result of the state that was just built
-        if (isVocab(regex.charAt(index)) && regex.charAt(index) != '.' && (int)regex.charAt(index) != 92) {
+        if (isVocab(regex.charAt(index)) && regex.charAt(index) != '.' && (int) regex.charAt(index) != 92) {
             setState(state, regex.charAt(index) + "", state + 1, state + 1);
             index++;
             r = state;
@@ -175,14 +159,14 @@ public class REcompile {
             index++;
             r = state;
             state++;
-        } else if((int)regex.charAt(index) == 92) {
+        } else if ((int) regex.charAt(index) == 92) {
             String escapedChar = "";
             // skip over the \ character
             index++;
             escapedChar = String.valueOf(regex.charAt(index));
             System.out.println(escapedChar);
             // add the escaped character
-            setState(state, escapedChar , state+1, state+1);
+            setState(state, escapedChar, state + 1, state + 1);
             index++;
             r = state;
             state++;
@@ -198,12 +182,10 @@ public class REcompile {
                 } else {
                     return -1;
                 }
-            }
-            else if(regex.charAt(index) == '[') {
+            } else if (regex.charAt(index) == '[') {
                 index++;
                 r = addList();
-            }
-            else {
+            } else {
                 System.out.println("Invalid Expression!");
                 return -1;
             }
@@ -212,20 +194,22 @@ public class REcompile {
         return r;
     }
 
+    // handles alteration for []
     public static int addList() {
         int r;
         String s = "";
-        while(regex.charAt(index) != ']') {
-            s =  s.concat(regex.charAt(index)+"");
+        while (regex.charAt(index) != ']') {
+            s = s.concat(regex.charAt(index) + "");
             index++;
         }
-        setState(state, s, state+1, state+1);
+        setState(state, s, state + 1, state + 1);
         index++;
         r = state;
         state++;
         return r;
     }
 
+    // check is a vocabulary
     public static boolean isVocab(char c) {
         String specialChar = "*+?|()[]";
         if (!specialChar.contains(c + "")) {
@@ -234,6 +218,8 @@ public class REcompile {
             return false;
         }
     }
+
+    // check is special character
     public static boolean isSpecial(char c) {
         String specialChar = "*+?|()[]";
         if (specialChar.contains(c + "")) {
@@ -242,12 +228,15 @@ public class REcompile {
             return false;
         }
     }
+
+    // set state method
     public static void setState(int s, String c, int n1, int n2) {
         ch[s] = c;
         nxt1[s] = n1;
         nxt2[s] = n2;
     }
 
+    // displays the FSM to console
     public static void printFSM() {
         System.out.println("s\tch\t1\t2");
         System.out.println("--------------------------");
