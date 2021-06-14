@@ -1,13 +1,19 @@
+
+//
+// Names:   Eugene Chew   ,   Bhavit Wadhwa
+// IDs:     1351553       ,   1516846
+//
 import java.io.*;
 import java.util.*;
 
 public class REsearch {
-
     //Storing states from the FSM
     static ArrayList<stateNode> fsmNodes = new ArrayList<stateNode>();
+
     static Integer SCAN_STATE = -5;
 
     public static void main(String[] args) {
+
         //Check correct usage and standard input
         if (args.length == 0) {
             System.err.println("Please enter a valid *TEST* input files:");
@@ -17,6 +23,7 @@ public class REsearch {
             System.err.println("#2: REGEX: 'brown|test'             : cat brownTestFSM.txt | java REsearch abraTestInput.txt > out.txt\n");
             System.err.println("OR (with valid compiler):");
             System.err.println("#3: Usage testing example           : REcompile <regexExpressionHere> | java REsearch <inputTextFileHere> > out.txt\n");
+
             System.exit(0);
         }
 
@@ -37,6 +44,7 @@ public class REsearch {
             nextLine = fileReader.readLine();
             
             //While there are still lines to read from the file
+
             while (nextLine != null) {
                 String[] splitChars = nextLine.split("");
                 
@@ -59,6 +67,7 @@ public class REsearch {
     }
 
     // Recieves a string array containing split line from text file
+
     // Checks a substring can go through FSM and reach the final state -> contains pattern)
     public static boolean executePatternSearch(String[] splitLine) {
         
@@ -74,12 +83,14 @@ public class REsearch {
             for (int pointer = marker; deque.checkHead(); pointer++) {
                 deque.addTail(SCAN_STATE);
 
+
                 // Loop each possible next state
                 for (int currentStateValue = deque.getHead(); currentStateValue != SCAN_STATE; currentStateValue = deque.getHead()) {
                     stateNode currentNode = fsmNodes.get(currentStateValue);
 
-                    //If it is a BRANCH state
+                    // If it is a BRANCH state
                     if (currentNode.ch.equals("br")) {
+
                         
                         //START STATE (expected dummy state)
                         if (currentNode.next1 == currentNode.next2) {
@@ -109,6 +120,7 @@ public class REsearch {
                         //If the next state is the end of the FSM (char == null)
                         if (fsmNodes.get(currentNode.next1).ch.equals("null")) {
                             return true;
+
                         }
                         deque.addTail(currentNode.next1);
                     }
@@ -142,17 +154,20 @@ public class REsearch {
 
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
             line = reader.readLine();
             int counter = 0;
 
             while (line != null) {
                 split = line.split(",");
+
                 fsmNodes.add(new stateNode(split[0].toString(), Integer.parseInt(split[1]), Integer.parseInt(split[2]), counter));
                 line = reader.readLine();
                 counter++;
             }
         } catch(Exception e) {
             System.err.println("Invalid piped in FSM file");
+
             e.printStackTrace();
         }
     }
