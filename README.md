@@ -1,3 +1,4 @@
+
 # README: COMPX301 [A3] - Pattern Search
 
 Name: Eugene Chew - ID: 1351553
@@ -18,21 +19,23 @@ Name: Bhavit Wadhwa - ID: 1516846
 ### REcompile:
 
 > Grammar:
-E -> T
-E -> TE
 
-T -> F
-T -> F*
-T -> F+ 
-T -> F?
-T -> F | T
+	E -> T
+	E -> TE
 
-F -> .
-F -> \
-F -> (E)
-F -> [A]
+	T -> F
+	T -> F*
+	T -> F+ 
+	T -> F?
+	T -> F | T
+
+	F -> .
+	F -> \
+	F -> (E)
+	F -> [A]
 
 > Tested basic regular expressions:
+
     e.g
     a(bra)+cada(bra)+
     aa*bc
@@ -43,8 +46,9 @@ F -> [A]
     a*b|b
 
 > Alternation will be treated with brackets
-e.g.
-ab*|c will be treated as (ab*)|c
+
+	e.g.
+	ab*|c will be treated as (ab*)|c
 
 
 ### REsearch:
