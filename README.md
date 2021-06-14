@@ -6,6 +6,7 @@ java REcompile "Regexp"
 
 Tested basic regular expressions:
 e.g
+a(bra)+cada(bra)+
 aa*bc
 aa+bc
 abc

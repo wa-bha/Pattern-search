@@ -34,17 +34,17 @@ public class REcompile {
             nxt2 = new int[regex.length() + 2];
             initial = expression();
             if (initial == -1) {
-                System.out.println("The Regular Expression: " + regex + " is not valid");
+                System.err.println("The Regular Expression: " + regex + " is not valid");
                 return;
             } else {
                 if (altState != -1) {
                     setState(startState, "br", altState, altState); // initialise a blank state
                     printFSM();
-                    System.out.println("Regular Expression: " + regex);
+                    System.err.println("Regular Expression: " + regex);
                 } else {
                     setState(startState, "br", initial, initial); // initialise a blank state
                     printFSM();
-                    System.out.println("Regular Expression: " + regex);
+                    System.err.println("Regular Expression: " + regex);
                 }
             }
         } catch (Exception e) {
@@ -204,7 +204,7 @@ public class REcompile {
                 index++;
                 r = addList();
             } else {
-                System.out.println("Invalid Expression!");
+                // System.out.println("Invalid Expression!");
                 return -1;
             }
         }
@@ -256,11 +256,8 @@ public class REcompile {
 
     // displays the FSM to console
     public static void printFSM() {
-        System.out.println("s\tch\t1\t2");
-        System.out.println("--------------------------");
         for (int i = 0; i < ch.length; i++) {
-            System.out.println(i + "\t" + ch[i] + "\t" + nxt1[i] + "\t" + nxt2[i]);
+            System.out.println(ch[i] + "," + nxt1[i] + "," + nxt2[i]);
         }
-        System.out.println("--------------------------");
     }
 }
