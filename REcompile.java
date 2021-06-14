@@ -46,7 +46,6 @@ public class REcompile {
                     }
                 }
             }
-            System.out.println(regex);
             initial = expression();
             if (initial == -1) {
                 System.err.println("The Regular Expression: " + regex + " is not valid");
