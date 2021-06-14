@@ -81,7 +81,7 @@ public class REcompile {
             if (regex.charAt(index) == '*') {
                 // store
                 int tempS = state - 2;
-                String tempS_val = new String(ch[tempS] + " ");
+                String tempS_val = new String(ch[tempS] + "");
 
                 // create the branching state
                 setState(state, "br", t1, state + 1);
@@ -131,18 +131,13 @@ public class REcompile {
                 }
                 return r;
             }
-            if (regex.charAt(index) == '|' && index < regex.length()) { // check for alternation
+            if (regex.charAt(index) == '|') { // check for alternation
 
                 // create alternation branch
                 setState(state, "br", r, state + 1);
 
-                if ((ch[r - 1] == "br" && r - 1 == 0)) {
-                    setState(r - 1, ch[r - 1], state, state);
-                } else if (ch[r - 1] == "br" && r - 1 != 0) {
-                    setState(r - 1, ch[r - 1], nxt1[r - 1], state);
-                } else if (ch[r - 1] != "br") {
-                    setState(r - 2, ch[r - 2], state, state);
-                }
+                setState(r - 1, ch[r - 1], state, state);
+
                 // set initial starting state to point to our alternation branch
                 index++;
                 state++;
