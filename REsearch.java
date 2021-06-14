@@ -140,7 +140,7 @@ public class REsearch {
         //DEBUG FILEREADER
         //try (BufferedReader reader = new BufferedReader(new FileReader("abracadabraFSM.txt"))){
 
-        //try {
+        try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             line = reader.readLine();
             int counter = 0;
