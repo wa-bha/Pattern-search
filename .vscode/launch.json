@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch REcompile",
+            "request": "launch",
+            "mainClass": "REcompile",
+            "projectName": "pattern_search_48bef26c"
+        },
+        {
+            "type": "java",
             "name": "Launch Current File",
             "request": "launch",
             "mainClass": "${file}"

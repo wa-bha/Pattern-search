@@ -17,6 +17,7 @@ public class REcompile {
     static int startState = 0;
     static int state = 1;
     static int index = 0;
+    static int altState = -1;
 
     public static void main(String[] args) {
         String usgMsg = new String("Usage: java REcompile \"regex\"");
@@ -27,6 +28,7 @@ public class REcompile {
         }
         try {
             regex = args[0];
+            // regex = "a*";
             ch = new String[regex.length() + 2];
             nxt1 = new int[regex.length() + 2];
             nxt2 = new int[regex.length() + 2];
@@ -35,9 +37,15 @@ public class REcompile {
                 System.out.println("The Regular Expression: " + regex + " is not valid");
                 return;
             } else {
-                setState(startState, "br", initial, initial); // initialise a blank state
-                printFSM();
-                System.out.println("Regular Expression: " + regex);
+                if (altState != -1) {
+                    setState(startState, "br", altState, altState); // initialise a blank state
+                    printFSM();
+                    System.out.println("Regular Expression: " + regex);
+                } else {
+                    setState(startState, "br", initial, initial); // initialise a blank state
+                    printFSM();
+                    System.out.println("Regular Expression: " + regex);
+                }
             }
         } catch (Exception e) {
             System.err.println(e);
@@ -52,9 +60,9 @@ public class REcompile {
         r = term();
         // check if we still have expressions
         if (index < regex.length() && r != -1) {
+
             expression();
-        } else {
-            return -1;
+
         }
         return r;
     }
@@ -62,11 +70,13 @@ public class REcompile {
     public static int term() {
         int r, t1, t2, f;
         r = factor();
-        t1 = r; // make note of the created state
-        f = state - 1; // the last state that was built
-
+        t1 = r; // the start state
+        f = state - 1; // the end state / latest state that was built
         // check if the current index is within the bounds of the regex length
-        if (index < regex.length() && r != -1) {
+        if (index < regex.length()) {
+
+            // check special case of alternation
+
             // check Kleene closure
             if (regex.charAt(index) == '*') {
                 // store
@@ -88,12 +98,15 @@ public class REcompile {
                     r = state;
                     state++;
                 }
+                return r;
             } else if (regex.charAt(index) == '+') { // check preceding regexp 1 or more
                 // create the branching state
                 setState(state, "br", t1, state + 1);
                 index++;
                 r = state;
                 state++;
+
+                return r;
             } else if (regex.charAt(index) == '?') { // check preceding regexp 0 or 1
                 // store
                 int tempS = state - 2;
@@ -116,33 +129,38 @@ public class REcompile {
                     r = state;
                     state++;
                 }
-            } else if (regex.charAt(index) == '|') { // check for alternation
-                int preState;
-
-                preState = state - 2;
-                if (nxt1[f] == nxt2[f]) {
-                    nxt2[f] = state;
-                }
-                nxt1[f] = state;
-                f = state - 1;
-                index++;
-                r = state;
-                state++;
-                t2 = term();
-                setState(r, "br", t1, state - 1);
-                if (nxt1[f] == nxt2[f]) {
-                    nxt2[f] = state;
-                }
-                nxt1[f] = state;
-                // change the previous linked states next states
-                if (ch[preState] != "br") {
-                    setState(preState, ch[preState], r, r);
-                } else if (ch[preState] == "br") {
-                    setState(preState, ch[preState], nxt1[preState], r);
-                }
+                return r;
             }
-        } else {
-            return -1;
+            if (regex.charAt(index) == '|' && index < regex.length()) { // check for alternation
+
+                // create alternation branch
+                setState(state, "br", r, state + 1);
+
+                if ((ch[r - 1] == "br" && r - 1 == 0)) {
+                    setState(r - 1, ch[r - 1], state, state);
+                } else if (ch[r - 1] == "br" && r - 1 != 0) {
+                    setState(r - 1, ch[r - 1], nxt1[r - 1], state);
+                } else if (ch[r - 1] != "br") {
+                    setState(r - 2, ch[r - 2], state, state);
+                }
+                // set initial starting state to point to our alternation branch
+                index++;
+                state++;
+                // gets the
+                t2 = term();
+
+                // change the previous linked states next states
+                if (ch[f] != "br") {
+                    setState(f, ch[f], state, state);
+                } else if (ch[f] == "br") {
+                    setState(f, ch[f], nxt1[f], state);
+                }
+
+                r = t2 - 1;
+
+                return r;
+            }
+
         }
         return r;
     }
@@ -159,7 +177,7 @@ public class REcompile {
             index++;
             r = state;
             state++;
-        } else if ((int) regex.charAt(index) == 92) {
+        } else if ((int) regex.charAt(index) == 92) { // escape character
             String escapedChar = "";
             // skip over the \ character
             index++;
