@@ -57,3 +57,18 @@ Successfully tested the following commands to retrieve successful output:
     Mary detested her little brown lamb
     brown
     retested
+
+Tested basic regular expressions:
+e.g
+a(bra)+cada(bra)+
+aa*bc
+aa+bc
+abc
+a*
+abc?d
+a*b|b
+
+Alternation will be treated with brackets
+e.g.
+
+ab*|c will be treated as (ab*)|c
