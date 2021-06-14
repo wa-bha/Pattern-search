@@ -14,4 +14,7 @@ a*
 abc?d
 a*b|b
 
-any other alternation/regular expression that aren't tested might not work with the current status of the program.
+Alternation will be treated with brackets
+e.g.
+
+ab*|c will be treated as (ab*)|c

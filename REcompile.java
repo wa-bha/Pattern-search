@@ -18,6 +18,7 @@ public class REcompile {
     static int state = 1;
     static int index = 0;
     static int altState = -1;
+    static boolean hasAlt = false;
 
     public static void main(String[] args) {
         String usgMsg = new String("Usage: java REcompile \"regex\"");
@@ -28,10 +29,24 @@ public class REcompile {
         }
         try {
             regex = args[0];
-            // regex = "a*";
             ch = new String[regex.length() + 2];
             nxt1 = new int[regex.length() + 2];
             nxt2 = new int[regex.length() + 2];
+
+            for (int i = 0; i < regex.length(); i++) {
+                if (regex.charAt(i) == '|') {
+                    hasAlt = true;
+                }
+            }
+            if (hasAlt) {
+                for (int i = 0; i < regex.length(); i++) {
+                    if (regex.charAt(i) == '|') {
+                        regex = '(' + regex.substring(0, i) + ')' + regex.substring(i);
+                        break;
+                    }
+                }
+            }
+            System.out.println(regex);
             initial = expression();
             if (initial == -1) {
                 System.err.println("The Regular Expression: " + regex + " is not valid");
