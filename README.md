@@ -69,9 +69,7 @@ Successfully tested the following commands to retrieve successful output:
 
 > Out.txt returns 3 successful matches:
 
-    abracadabra
-    abrabrabracadabra
-    abracadabrabrabra
+![image](https://user-images.githubusercontent.com/55519189/121895938-e2ce3f80-cd74-11eb-8981-52b3fdcf88a7.png)
 
 #### [2]: REGEX EXP: " brown|test"
     cat brownTestFSM.txt | java REsearch abraTestInput.txt > out.txt
