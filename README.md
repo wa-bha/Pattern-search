@@ -2,7 +2,7 @@
 
 Command Chain:
 javac *.java
-java REcompile "Regexp"
+java REcompile "Regexp" | java REsearch <filename>
 
 Tested basic regular expressions:
 e.g
