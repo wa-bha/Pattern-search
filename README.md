@@ -17,7 +17,34 @@ Name: Bhavit Wadhwa - ID: 1516846
 
 ### REcompile:
 
+> Grammar:
+E -> T
+E -> TE
 
+T -> F
+T -> F*
+T -> F+ 
+T -> F?
+T -> F | T
+
+F -> .
+F -> \
+F -> (E)
+F -> [A]
+
+> Tested basic regular expressions:
+    e.g
+    a(bra)+cada(bra)+
+    aa*bc
+    aa+bc
+    abc
+    a*
+    abc?d
+    a*b|b
+
+> Alternation will be treated with brackets
+e.g.
+ab*|c will be treated as (ab*)|c
 
 
 ### REsearch:
@@ -58,16 +85,4 @@ Successfully tested the following commands to retrieve successful output:
     brown
     retested
 
-> Tested basic regular expressions:
-    e.g
-    a(bra)+cada(bra)+
-    aa*bc
-    aa+bc
-    abc
-    a*
-    abc?d
-    a*b|b
 
-> Alternation will be treated with brackets
-e.g.
-ab*|c will be treated as (ab*)|c
