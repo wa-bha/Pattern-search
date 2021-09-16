@@ -7,7 +7,7 @@ Name: Bhavit Wadhwa - ID: 1516846
 
   
 
-## Tested (WORKING) Functionality:
+## Tested Functionality:
 
 ### Both together (compile and search):
     java REcompile "(tx)|z" | java REsearch BrownCorpus.txt > out.txt
